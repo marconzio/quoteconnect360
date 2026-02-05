@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: connect
+      POSTGRES_PASSWORD: connect
+      POSTGRES_DB: connect360_quote
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://connect:connect@db:5432/connect360_quote
+      JWT_SECRET: "dev-change-me"
+      # SFTP (optional)
+      SFTP_HOST: ""
+      SFTP_PORT: "22"
+      SFTP_USER: ""
+      SFTP_PASSWORD: ""
+      SFTP_REMOTE_DIR: "/inbound"
+      # Artifact storage provider: local|s3|azure (local by default)
+      ARTIFACT_PROVIDER: "local"
+      S3_BUCKET: ""
+      AWS_REGION: "us-west-2"
+      AZURE_STORAGE_CONNECTION_STRING: ""
+      AZURE_CONTAINER: ""
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
